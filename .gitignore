@@ -1,0 +1,10 @@
+.env
+.DS_Store
+backend/.venv/
+backend/.env
+frontend/node_modules/
+
+backend/.env*
+frontend/.env*
+frontend/.next/
+frontend/.env.local

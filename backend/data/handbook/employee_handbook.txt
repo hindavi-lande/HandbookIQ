@@ -1,0 +1,80 @@
+ACME Corp – Employee Handbook  (v3.2, effective Jan 2025)
+==========================================================
+
+SECTION 1 – LEAVE POLICY
+--------------------------
+Full-time employees are entitled to 20 days of paid annual leave per calendar year.
+Leave accrues at a rate of 1.67 days per completed month of service.
+Unused leave may be carried forward up to a maximum of 5 days into the next calendar year.
+To request leave, submit a request via the HR portal at least 5 business days in advance.
+Emergency leave requests should be communicated to your direct manager immediately by phone.
+
+Sick Leave
+All employees are entitled to 10 days of paid sick leave per year.
+A medical certificate is required for absences exceeding 3 consecutive days.
+Sick leave does not accrue; unused sick leave does not carry over.
+
+Maternity & Paternity Leave
+Primary caregivers receive 16 weeks of fully paid maternity / adoption leave.
+Secondary caregivers receive 4 weeks of fully paid paternity leave.
+Both must be taken within 12 months of the child's birth or placement.
+
+SECTION 2 – CODE OF CONDUCT
+-----------------------------
+ACME Corp expects all employees to act with integrity, respect, and professionalism.
+Discrimination, harassment, or bullying of any kind is strictly prohibited.
+Employees who witness or experience misconduct should report it to HR or use the
+anonymous whistleblower hotline: 1-800-ACME-ETH.
+
+Conflicts of Interest
+Employees must disclose any personal financial interest in a supplier, customer, or competitor.
+Outside employment that conflicts with ACME's business interests requires prior written approval from HR.
+
+SECTION 3 – REMOTE WORK POLICY
+--------------------------------
+Employees may work remotely up to 3 days per week with manager approval.
+Remote workers must be reachable during core hours: 10:00 AM – 3:00 PM local time.
+A secure VPN connection is mandatory when accessing company systems from outside the office.
+The company will reimburse up to $500 per year for home-office equipment.
+
+SECTION 4 – BENEFITS
+----------------------
+Health Insurance
+ACME covers 100 % of the premium for the employee and 70 % for dependants on the standard plan.
+Open enrolment occurs each November for coverage starting the following January.
+
+Retirement
+The company matches 401(k) contributions up to 4 % of base salary.
+Vesting is immediate for employee contributions; employer match vests over 3 years (cliff).
+
+Learning & Development
+Each employee receives an annual learning budget of $1,500 for courses, conferences, or books.
+Expenses must be pre-approved by the direct manager and submitted within 30 days of completion.
+
+SECTION 5 – PERFORMANCE REVIEWS
+---------------------------------
+Formal performance reviews are held twice a year: in June and December.
+Ratings scale: Exceeds Expectations / Meets Expectations / Needs Improvement.
+Employees who receive two consecutive "Needs Improvement" ratings will be placed on a
+Performance Improvement Plan (PIP) with a 90-day remediation window.
+
+SECTION 6 – IT & DATA SECURITY
+--------------------------------
+All company laptops must use full-disk encryption and run the approved endpoint-protection suite.
+Employees must not store customer data on personal devices or unapproved cloud services.
+Passwords must be at least 14 characters and changed every 90 days.
+Multi-factor authentication is mandatory for all corporate accounts.
+Any suspected security incident must be reported to security@acme.com within 1 hour of discovery.
+
+SECTION 7 – EXPENSE REIMBURSEMENT
+-----------------------------------
+Business travel expenses must be submitted via Concur within 30 days of the trip.
+Meals are reimbursed at a maximum of $75 per day for domestic travel and $100 for international.
+Receipts are required for any single expense over $25.
+First-class flights require VP-level approval.
+
+CONTACT INFORMATION
+--------------------
+HR Department    : hr@acme.com          |  ext. 1100
+IT Help Desk     : ithelp@acme.com      |  ext. 2200
+Ethics Hotline   : 1-800-ACME-ETH
