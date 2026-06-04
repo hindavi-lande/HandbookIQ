@@ -8,6 +8,7 @@ Endpoints
 from __future__ import annotations
 
 import logging
+from datetime import datetime
 from typing import List
 
 from fastapi import APIRouter, Depends, HTTPException, status
@@ -54,6 +55,7 @@ def ask(request: AskRequest, db: Session = Depends(db_dependency)):
         answer=result["answer"],
         top_k=request.top_k,
         retrieved_chunk_ids=retrieved_ids,
+        created_at=datetime.utcnow(),
     )
     db.add(db_log)
     db.commit()
@@ -76,7 +78,7 @@ def history(limit: int = 20, db: Session = Depends(db_dependency)):
     """Return the most recent *limit* Q&A interactions."""
     logs = (
         db.query(QALog)
-        .order_by(QALog.created_at.desc())
+        .order_by(QALog.created_at.desc().nulls_last())
         .limit(limit)
         .all()
     )
@@ -86,7 +88,7 @@ def history(limit: int = 20, db: Session = Depends(db_dependency)):
             "session_id": log.session_id,
             "question": log.question,
             "answer": log.answer,
-            "created_at": log.created_at.isoformat(),
+            "created_at": (log.created_at or datetime.utcnow()).isoformat(),
         }
         for log in logs
     ]

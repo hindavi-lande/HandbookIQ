@@ -56,7 +56,11 @@ class Chunk(Base):
     chunk_index: Mapped[int] = mapped_column(Integer, nullable=False)
     content: Mapped[str] = mapped_column(Text, nullable=False)
     char_count: Mapped[int] = mapped_column(Integer, nullable=False)
-    created_at: Mapped[datetime] = mapped_column(server_default=func.now())
+    created_at: Mapped[datetime] = mapped_column(
+        nullable=False,
+        server_default=func.now(),
+        default=datetime.utcnow,
+    )
 
     document: Mapped["Document"] = relationship("Document", back_populates="chunks")
 
@@ -76,7 +80,11 @@ class QALog(Base):
     top_k: Mapped[int] = mapped_column(Integer, default=4)
     # comma-separated chunk UUIDs that were retrieved
     retrieved_chunk_ids: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
-    created_at: Mapped[datetime] = mapped_column(server_default=func.now())
+    created_at: Mapped[datetime] = mapped_column(
+        nullable=False,
+        server_default=func.now(),
+        default=datetime.utcnow,
+    )
 
     def __repr__(self) -> str:
         return f"<QALog id={self.id} session={self.session_id}>"

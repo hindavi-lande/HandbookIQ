@@ -26,9 +26,30 @@ engine = create_engine(
 SessionLocal = sessionmaker(bind=engine, autoflush=False, autocommit=False)
 
 
+def _migrate_qa_logs_created_at() -> None:
+    """Backfill NULL timestamps and enforce NOT NULL on qa_logs.created_at."""
+    with engine.begin() as conn:
+        conn.execute(
+            text(
+                "UPDATE qa_logs SET created_at = CURRENT_TIMESTAMP "
+                "WHERE created_at IS NULL"
+            )
+        )
+        conn.execute(
+            text("ALTER TABLE qa_logs ALTER COLUMN created_at SET NOT NULL")
+        )
+        conn.execute(
+            text(
+                "ALTER TABLE qa_logs ALTER COLUMN created_at "
+                "SET DEFAULT CURRENT_TIMESTAMP"
+            )
+        )
+
+
 def init_db() -> None:
-    """Create all tables (idempotent)."""
+    """Create all tables (idempotent) and apply lightweight schema fixes."""
     Base.metadata.create_all(bind=engine)
+    _migrate_qa_logs_created_at()
 
 
 def check_postgres() -> str:
