@@ -31,6 +31,13 @@ class Settings(BaseSettings):
             f"@{self.postgres_host}:{self.postgres_port}/{self.postgres_db}"
         )
 
+    @property
+    def postgres_async_url(self) -> str:
+        return (
+            f"postgresql+asyncpg://{self.postgres_user}:{self.postgres_password}"
+            f"@{self.postgres_host}:{self.postgres_port}/{self.postgres_db}"
+        )
+
     # ── Qdrant ────────────────────────────────────────────────────────────────
     qdrant_host: str = "localhost"
     qdrant_port: int = 6333

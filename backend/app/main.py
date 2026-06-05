@@ -17,10 +17,11 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import get_settings
-from app.db.postgres import check_postgres, init_db
+from app.db.postgres import check_postgres, dispose_async_engine, init_db
+from app.graph.rag_graph import init_rag_graph
 from app.db.qdrant import check_qdrant, init_collection
 from app.models.schemas import HealthResponse
-from app.routers import ingest, qa
+from app.routers import ingest, qa, query
 
 # ── Logging ───────────────────────────────────────────────────────────────────
 _settings = get_settings()
@@ -61,12 +62,19 @@ def create_app() -> FastAPI:
     async def on_startup() -> None:
         logger.info("Initialising PostgreSQL tables …")
         init_db()
+        logger.info("Compiling RAG LangGraph …")
+        init_rag_graph()
         logger.info("Bootstrapping Qdrant collection …")
         init_collection()
         logger.info("Application ready.")
 
+    @app.on_event("shutdown")
+    async def on_shutdown() -> None:
+        await dispose_async_engine()
+
     # ── Routers ───────────────────────────────────────────────────────────────
     app.include_router(qa.router)
+    app.include_router(query.router)
     app.include_router(ingest.router)
 
     # ── Health ────────────────────────────────────────────────────────────────

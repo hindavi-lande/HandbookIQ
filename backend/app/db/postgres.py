@@ -1,13 +1,14 @@
 """
 app/db/postgres.py
-SQLAlchemy engine + session factory for PostgreSQL.
+SQLAlchemy sync + async engines and session factories for PostgreSQL.
 """
 from __future__ import annotations
 
-from contextlib import contextmanager
-from typing import Generator
+from contextlib import asynccontextmanager, contextmanager
+from typing import AsyncGenerator, Generator
 
 from sqlalchemy import create_engine, text
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 from sqlalchemy.orm import Session, sessionmaker
 
 from app.config import get_settings
@@ -17,13 +18,28 @@ _settings = get_settings()
 
 engine = create_engine(
     _settings.postgres_url,
-    pool_pre_ping=True,       # drop stale connections
+    pool_pre_ping=True,
     pool_size=5,
     max_overflow=10,
     echo=(_settings.app_env == "development"),
 )
 
 SessionLocal = sessionmaker(bind=engine, autoflush=False, autocommit=False)
+
+async_engine = create_async_engine(
+    _settings.postgres_async_url,
+    pool_pre_ping=True,
+    pool_size=5,
+    max_overflow=10,
+    echo=(_settings.app_env == "development"),
+)
+
+AsyncSessionLocal = async_sessionmaker(
+    bind=async_engine,
+    class_=AsyncSession,
+    autoflush=False,
+    expire_on_commit=False,
+)
 
 
 def _migrate_qa_logs_created_at() -> None:
@@ -64,7 +80,7 @@ def check_postgres() -> str:
 
 @contextmanager
 def get_db() -> Generator[Session, None, None]:
-    """Yield a database session; always close it afterwards."""
+    """Yield a sync database session; always close it afterwards."""
     db = SessionLocal()
     try:
         yield db
@@ -76,7 +92,32 @@ def get_db() -> Generator[Session, None, None]:
         db.close()
 
 
-# FastAPI dependency
 def db_dependency() -> Generator[Session, None, None]:
+    """FastAPI dependency for sync sessions."""
     with get_db() as session:
         yield session
+
+
+@asynccontextmanager
+async def get_async_db() -> AsyncGenerator[AsyncSession, None]:
+    """Yield an async database session; commit/rollback and close on exit."""
+    session = AsyncSessionLocal()
+    try:
+        yield session
+        await session.commit()
+    except Exception:
+        await session.rollback()
+        raise
+    finally:
+        await session.close()
+
+
+async def async_db_dependency() -> AsyncGenerator[AsyncSession, None]:
+    """FastAPI dependency for async sessions."""
+    async with get_async_db() as session:
+        yield session
+
+
+async def dispose_async_engine() -> None:
+    """Release async connection pool resources on application shutdown."""
+    await async_engine.dispose()

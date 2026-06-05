@@ -8,8 +8,8 @@ Endpoints
 from __future__ import annotations
 
 import logging
+import uuid
 from datetime import datetime
-from typing import List
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
@@ -28,29 +28,30 @@ router = APIRouter(prefix="/api", tags=["Q&A"])
     response_model=AskResponse,
     summary="Ask a question about the company handbook",
 )
-def ask(request: AskRequest, db: Session = Depends(db_dependency)):
+async def ask(request: AskRequest, db: Session = Depends(db_dependency)):
     """
-    1. Run the LangGraph pipeline (retrieve → generate → format).
-    2. Persist the interaction to PostgreSQL.
+    1. Run the LangGraph pipeline (load history → retrieve → generate → save).
+    2. Persist the interaction to PostgreSQL (qa_logs audit table).
     3. Return the structured response.
     """
+    session_id = request.session_id or str(uuid.uuid4())
+
     try:
-        result = run_qa_pipeline(
+        result = await run_qa_pipeline(
             question=request.question,
             top_k=request.top_k,
-            session_id=request.session_id,
+            session_id=session_id,
         )
     except Exception as exc:
         logger.exception("Pipeline error for question: %s", request.question)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Pipeline error: {exc}",
-        )
+        ) from exc
 
-    # ── Persist to PostgreSQL ──────────────────────────────────────────────
     retrieved_ids = ",".join(s["chunk_id"] for s in result.get("sources", []))
     db_log = QALog(
-        session_id=request.session_id,
+        session_id=session_id,
         question=request.question,
         answer=result["answer"],
         top_k=request.top_k,
@@ -60,7 +61,6 @@ def ask(request: AskRequest, db: Session = Depends(db_dependency)):
     db.add(db_log)
     db.commit()
 
-    # ── Build response ─────────────────────────────────────────────────────
     sources = [SourceChunk(**s) for s in result.get("sources", [])]
     return AskResponse(
         question=result["question"],
