@@ -34,7 +34,7 @@ def build_rag_graph(llm, retriever, session_factory: async_sessionmaker[AsyncSes
                 raise
 
     async def retrieve(state: RAGState) -> dict:
-        return await retrieve_node(state, retriever)
+        return await retrieve_node(state, retriever, llm)
 
     async def generate(state: RAGState) -> dict:
         return await generate_node(state, llm)

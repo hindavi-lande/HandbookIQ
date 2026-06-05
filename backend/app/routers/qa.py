@@ -34,7 +34,12 @@ async def ask(request: AskRequest, db: Session = Depends(db_dependency)):
     2. Persist the interaction to PostgreSQL (qa_logs audit table).
     3. Return the structured response.
     """
-    session_id = request.session_id or str(uuid.uuid4())
+    if request.session_id:
+        session_id = request.session_id
+        logger.info("Reusing conversation session_id=%s", session_id)
+    else:
+        session_id = str(uuid.uuid4())
+        logger.info("Created new conversation session_id=%s", session_id)
 
     try:
         result = await run_qa_pipeline(

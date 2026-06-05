@@ -1,28 +1,58 @@
 "use client";
 
-import { useState } from "react";
-import { Sparkles, AlertCircle } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Sparkles, AlertCircle, MessageSquarePlus } from "lucide-react";
 import QuestionForm from "@/components/QuestionForm";
 import AnswerPanel from "@/components/AnswerPanel";
 import { api } from "@/lib/api";
+import {
+  clearStoredSessionId,
+  createSessionId,
+  getOrCreateSessionId,
+  storeSessionId,
+} from "@/lib/session";
 import type { AskResponse } from "@/types";
 
 export default function HomePage() {
+  const [sessionId, setSessionId] = useState<string | null>(null);
   const [response, setResponse] = useState<AskResponse | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  useEffect(() => {
+    const id = getOrCreateSessionId();
+    setSessionId(id);
+    storeSessionId(id);
+  }, []);
+
   const handleAsk = async (question: string, topK: number) => {
+    const activeSessionId = sessionId ?? getOrCreateSessionId();
     setLoading(true);
     setError(null);
     try {
-      const res = await api.ask({ question, top_k: topK });
+      const res = await api.ask({
+        question,
+        top_k: topK,
+        session_id: activeSessionId,
+      });
+      const resolvedSessionId = res.session_id ?? activeSessionId;
+      setSessionId(resolvedSessionId);
+      storeSessionId(resolvedSessionId);
       setResponse(res);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Something went wrong. Is the backend running?");
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleNewConversation = () => {
+    const newSessionId = createSessionId();
+    clearStoredSessionId();
+    storeSessionId(newSessionId);
+    setSessionId(newSessionId);
+    setResponse(null);
+    setError(null);
   };
 
   return (
@@ -44,7 +74,20 @@ export default function HomePage() {
         </div>
 
         {/* Question Form */}
-        <QuestionForm onSubmit={handleAsk} loading={loading} />
+        <div className="space-y-3">
+          <div className="flex justify-end">
+            <button
+              type="button"
+              onClick={handleNewConversation}
+              disabled={loading}
+              className="inline-flex items-center gap-2 text-xs px-3 py-1.5 rounded-lg border border-slate-700 text-slate-500 hover:text-slate-300 hover:border-slate-600 transition-all disabled:opacity-40"
+            >
+              <MessageSquarePlus className="w-3.5 h-3.5" />
+              New conversation
+            </button>
+          </div>
+          <QuestionForm onSubmit={handleAsk} loading={loading} />
+        </div>
 
         {/* Error */}
         {error && (
