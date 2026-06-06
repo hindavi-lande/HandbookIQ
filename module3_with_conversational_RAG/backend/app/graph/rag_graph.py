@@ -12,11 +12,12 @@ from app.graph.nodes import (
     save_history_node,
 )
 from app.graph.state import RAGState
+from app.services.llm import get_llm
 
 _compiled_graph = None
 
 
-def build_rag_graph(llm, retriever, session_factory: async_sessionmaker[AsyncSession]):
+def build_rag_graph(retriever, session_factory: async_sessionmaker[AsyncSession]):
     graph = StateGraph(RAGState)
 
     async def load_history(state: RAGState) -> dict:
@@ -34,9 +35,11 @@ def build_rag_graph(llm, retriever, session_factory: async_sessionmaker[AsyncSes
                 raise
 
     async def retrieve(state: RAGState) -> dict:
+        llm = get_llm(state["llm_provider"], state["model_name"])
         return await retrieve_node(state, retriever, llm)
 
     async def generate(state: RAGState) -> dict:
+        llm = get_llm(state["llm_provider"], state["model_name"])
         return await generate_node(state, llm)
 
     graph.add_node("load_history", load_history)
@@ -55,10 +58,9 @@ def build_rag_graph(llm, retriever, session_factory: async_sessionmaker[AsyncSes
 
 def init_rag_graph() -> None:
     global _compiled_graph
-    from app.services.llm import get_llm
     from app.services.rag_retriever import get_retriever
 
-    _compiled_graph = build_rag_graph(get_llm(), get_retriever(), AsyncSessionLocal)
+    _compiled_graph = build_rag_graph(get_retriever(), AsyncSessionLocal)
 
 
 def get_compiled_rag_graph():

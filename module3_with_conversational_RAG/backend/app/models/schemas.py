@@ -41,6 +41,14 @@ class AskRequest(BaseModel):
         default=None,
         description="Optional session identifier for conversation history.",
     )
+    llm_provider: Optional[str] = Field(
+        default=None,
+        description="LLM provider: groq, openai, or ollama. Defaults to server config.",
+    )
+    model_name: Optional[str] = Field(
+        default=None,
+        description="Model id for the selected provider. Defaults to provider default.",
+    )
 
 
 class SourceChunk(BaseModel):
@@ -55,7 +63,29 @@ class AskResponse(BaseModel):
     answer: str
     sources: List[SourceChunk]
     session_id: Optional[str]
+    llm_provider: Optional[str] = None
+    model_name: Optional[str] = None
     created_at: datetime = Field(default_factory=datetime.utcnow)
+
+
+# ── LLM models ────────────────────────────────────────────────────────────────
+
+class ModelOption(BaseModel):
+    id: str
+    label: str
+
+
+class ProviderOption(BaseModel):
+    id: str
+    label: str
+    default_model: str
+    models: List[ModelOption]
+
+
+class ModelsResponse(BaseModel):
+    default_provider: str
+    default_model: str
+    providers: List[ProviderOption]
 
 
 # ── Health ────────────────────────────────────────────────────────────────────

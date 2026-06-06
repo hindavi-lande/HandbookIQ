@@ -13,9 +13,20 @@ class Settings(BaseSettings):
         case_sensitive=False,
     )
 
+    # ── LLM provider switching ─────────────────────────────────────────────────
+    llm_provider: str = "groq"  # groq | openai | ollama
+
     # ── Groq ──────────────────────────────────────────────────────────────────
     groq_api_key: str
     groq_model: str = "llama3-70b-8192"
+
+    # ── OpenAI ────────────────────────────────────────────────────────────────
+    openai_api_key: str = ""
+    openai_model: str = "gpt-4o-mini"
+
+    # ── Ollama ────────────────────────────────────────────────────────────────
+    ollama_base_url: str = "http://localhost:11434"
+    ollama_model: str = "llama3.2"
 
     # ── PostgreSQL ────────────────────────────────────────────────────────────
     postgres_user: str = "postgres"

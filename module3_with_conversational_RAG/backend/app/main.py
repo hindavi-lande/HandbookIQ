@@ -21,7 +21,7 @@ from app.db.postgres import check_postgres, dispose_async_engine, init_db
 from app.graph.rag_graph import init_rag_graph
 from app.db.qdrant import check_qdrant, init_collection
 from app.models.schemas import HealthResponse
-from app.routers import ingest, qa, query
+from app.routers import ingest, models, qa, query
 
 # ── Logging ───────────────────────────────────────────────────────────────────
 _settings = get_settings()
@@ -74,6 +74,7 @@ def create_app() -> FastAPI:
 
     # ── Routers ───────────────────────────────────────────────────────────────
     app.include_router(qa.router)
+    app.include_router(models.router)
     app.include_router(query.router)
     app.include_router(ingest.router)
 

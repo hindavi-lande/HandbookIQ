@@ -7,6 +7,11 @@ interface Props {
   response: AskResponse;
 }
 
+function formatModelLabel(provider?: string | null, model?: string | null) {
+  if (!provider || !model) return null;
+  return `${provider} · ${model}`;
+}
+
 export default function AnswerPanel({ response }: Props) {
   const [showSources, setShowSources] = useState(true);
 
@@ -16,6 +21,8 @@ export default function AnswerPanel({ response }: Props) {
     hour: "2-digit",
     minute: "2-digit",
   });
+
+  const modelLabel = formatModelLabel(response.llm_provider, response.model_name);
 
   const paragraphs = response.answer.split(/\n+/).filter(Boolean);
 
@@ -27,9 +34,16 @@ export default function AnswerPanel({ response }: Props) {
           <Bot className="w-4 h-4 text-indigo-300" />
         </div>
         <span className="text-sm font-semibold text-slate-200">HandbookIQ Response</span>
-        <div className="ml-auto flex items-center gap-1.5 text-xs text-slate-500">
-          <Clock className="w-3 h-3" />
-          <span>{formattedDate}</span>
+        <div className="ml-auto flex items-center gap-3 text-xs text-slate-500">
+          {modelLabel && (
+            <span className="rounded-full border border-slate-700 px-2 py-0.5 text-slate-400">
+              {modelLabel}
+            </span>
+          )}
+          <div className="flex items-center gap-1.5">
+            <Clock className="w-3 h-3" />
+            <span>{formattedDate}</span>
+          </div>
         </div>
       </div>
 

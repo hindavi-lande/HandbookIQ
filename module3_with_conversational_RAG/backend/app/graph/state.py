@@ -6,6 +6,8 @@ from typing_extensions import TypedDict
 class RAGState(TypedDict):
     session_id: str
     question: str
+    llm_provider: str
+    model_name: str
     messages: Annotated[list, add_messages]   # LangGraph manages appending
     context: str                               # Retrieved from Qdrant
     answer: str

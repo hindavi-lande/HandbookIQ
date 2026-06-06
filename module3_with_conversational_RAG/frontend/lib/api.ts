@@ -5,6 +5,7 @@ import type {
   DocumentMeta,
   IngestResponse,
   HealthResponse,
+  ModelsResponse,
 } from "@/types";
 
 const BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
@@ -46,5 +47,9 @@ export const api = {
 
   health() {
     return request<HealthResponse>("/health");
+  },
+
+  models() {
+    return request<ModelsResponse>("/api/models");
   },
 };

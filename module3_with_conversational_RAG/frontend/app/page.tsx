@@ -11,13 +11,16 @@ import {
   getOrCreateSessionId,
   storeSessionId,
 } from "@/lib/session";
-import type { AskResponse } from "@/types";
+import type { AskResponse, ProviderOption } from "@/types";
 
 export default function HomePage() {
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [response, setResponse] = useState<AskResponse | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [providers, setProviders] = useState<ProviderOption[]>([]);
+  const [llmProvider, setLlmProvider] = useState("");
+  const [modelName, setModelName] = useState("");
 
   useEffect(() => {
     const id = getOrCreateSessionId();
@@ -25,7 +28,30 @@ export default function HomePage() {
     storeSessionId(id);
   }, []);
 
-  const handleAsk = async (question: string, topK: number) => {
+  useEffect(() => {
+    api
+      .models()
+      .then((models) => {
+        setProviders(models.providers);
+        setLlmProvider(models.default_provider);
+        setModelName(models.default_model);
+      })
+      .catch(() => {
+        setError("Could not load available LLM models from the backend.");
+      });
+  }, []);
+
+  const handleLlmChange = (provider: string, model: string) => {
+    setLlmProvider(provider);
+    setModelName(model);
+  };
+
+  const handleAsk = async (
+    question: string,
+    topK: number,
+    selectedProvider: string,
+    selectedModel: string
+  ) => {
     const activeSessionId = sessionId ?? getOrCreateSessionId();
     setLoading(true);
     setError(null);
@@ -34,6 +60,8 @@ export default function HomePage() {
         question,
         top_k: topK,
         session_id: activeSessionId,
+        llm_provider: selectedProvider,
+        model_name: selectedModel,
       });
       const resolvedSessionId = res.session_id ?? activeSessionId;
       setSessionId(resolvedSessionId);
@@ -86,7 +114,14 @@ export default function HomePage() {
               New conversation
             </button>
           </div>
-          <QuestionForm onSubmit={handleAsk} loading={loading} />
+          <QuestionForm
+            onSubmit={handleAsk}
+            loading={loading}
+            providers={providers}
+            llmProvider={llmProvider}
+            modelName={modelName}
+            onLlmChange={handleLlmChange}
+          />
         </div>
 
         {/* Error */}

@@ -9,6 +9,8 @@ export interface AskRequest {
   question: string;
   top_k?: number;
   session_id?: string;
+  llm_provider?: string;
+  model_name?: string;
 }
 
 export interface AskResponse {
@@ -16,6 +18,8 @@ export interface AskResponse {
   answer: string;
   sources: SourceChunk[];
   session_id: string | null;
+  llm_provider?: string | null;
+  model_name?: string | null;
   created_at: string;
 }
 
@@ -53,4 +57,22 @@ export interface HealthResponse {
   postgres: string;
   qdrant: string;
   collection: string;
+}
+
+export interface ModelOption {
+  id: string;
+  label: string;
+}
+
+export interface ProviderOption {
+  id: string;
+  label: string;
+  default_model: string;
+  models: ModelOption[];
+}
+
+export interface ModelsResponse {
+  default_provider: string;
+  default_model: string;
+  providers: ProviderOption[];
 }

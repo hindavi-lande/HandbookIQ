@@ -46,6 +46,8 @@ async def ask(request: AskRequest, db: Session = Depends(db_dependency)):
             question=request.question,
             top_k=request.top_k,
             session_id=session_id,
+            llm_provider=request.llm_provider,
+            model_name=request.model_name,
         )
     except Exception as exc:
         logger.exception("Pipeline error for question: %s", request.question)
@@ -72,6 +74,8 @@ async def ask(request: AskRequest, db: Session = Depends(db_dependency)):
         answer=result["answer"],
         sources=sources,
         session_id=result.get("session_id"),
+        llm_provider=result.get("llm_provider"),
+        model_name=result.get("model_name"),
     )
 
 
